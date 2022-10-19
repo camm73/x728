@@ -11,12 +11,12 @@ sudo sed -i '$ i #x728 Start power management on boot' /etc/rc.local
 
 echo '#!/bin/bash
 
-SHUTDOWN=5
+SHUTDOWN=41
 REBOOTPULSEMINIMUM=200
 REBOOTPULSEMAXIMUM=600
 echo "$SHUTDOWN" > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio$SHUTDOWN/direction
-BOOT=12
+BOOT=50
 echo "$BOOT" > /sys/class/gpio/export
 echo "out" > /sys/class/gpio/gpio$BOOT/direction
 echo "1" > /sys/class/gpio/gpio$BOOT/value
@@ -85,7 +85,7 @@ import sys
 import time
 
 # Global settings
-# GPIO is 26 for x728 v2.0 v2.1 v2.2, GPIO is 13 for X728 v1.2/v1.3
+# GPIO is 34 for x728 v2.0 v2.1 v2.2
 I2C_ADDR    = 0x36
 
 GPIO.setmode(GPIO.BCM)
