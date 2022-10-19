@@ -59,7 +59,6 @@ BUTTON=34
 
 echo "$BUTTON" > /sys/class/gpio/export;
 echo "out" > /sys/class/gpio/gpio$BUTTON/direction
-echo "1" > /sys/class/gpio/gpio$BUTTON/value
 
 SLEEP=${1:-4}
 
@@ -71,8 +70,7 @@ fi
 echo "X728 Shutting down..."
 /bin/sleep $SLEEP
 
-#restore GPIO 34
-echo "0" > /sys/class/gpio/gpio$BUTTON/value
+echo "1" > /sys/class/gpio/gpio$BUTTON/value
 ' > /usr/local/bin/x728softsd.sh
 sudo chmod +x /usr/local/bin/x728softsd.sh
 sudo echo "alias x728off='sudo x728softsd.sh'" >> /home/pi/.bashrc
