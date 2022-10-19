@@ -88,10 +88,6 @@ import time
 # GPIO is 34 for x728 v2.0 v2.1 v2.2
 I2C_ADDR    = 0x36
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(GPIO_PORT, GPIO.OUT)
-GPIO.setwarnings(False)
-
 def readVoltage(bus):
 
      address = I2C_ADDR
