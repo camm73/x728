@@ -121,4 +121,4 @@ while True:
         print ("Battery Low")
 
  time.sleep(2)
-' >> /home/pi/x728bat.py
+' > /home/pi/x728bat.py
