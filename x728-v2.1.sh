@@ -55,7 +55,7 @@ sudo sed -e '/button/ s/^#*/#/' -i /etc/rc.local
 
 echo '#!/bin/bash
 
-BUTTON=26
+BUTTON=34
 
 echo "$BUTTON" > /sys/class/gpio/export;
 echo "out" > /sys/class/gpio/gpio$BUTTON/direction
@@ -71,7 +71,7 @@ fi
 echo "X728 Shutting down..."
 /bin/sleep $SLEEP
 
-#restore GPIO 26
+#restore GPIO 34
 echo "0" > /sys/class/gpio/gpio$BUTTON/value
 ' > /usr/local/bin/x728softsd.sh
 sudo chmod +x /usr/local/bin/x728softsd.sh
@@ -80,19 +80,14 @@ sudo echo "alias x728off='sudo x728softsd.sh'" >> /home/pi/.bashrc
 #X728 Battery voltage & precentage reading
 #!/bin/bash
 
-#Get current PYTHON verson, 2 or 3
-#PY_VERSION=`python -V 2>&1|awk '{print $2}'|awk -F '.' '{print $1}'`
-
 echo '#!/usr/bin/env python
 import struct
 import smbus
 import sys
 import time
-import RPi.GPIO as GPIO
 
 # Global settings
 # GPIO is 26 for x728 v2.0 v2.1 v2.2, GPIO is 13 for X728 v1.2/v1.3
-GPIO_PORT 	= 26
 I2C_ADDR    = 0x36
 
 GPIO.setmode(GPIO.BCM)
@@ -127,72 +122,5 @@ while True:
  if readCapacity(bus) < 20:
         print ("Battery Low")
 
-#Set battery low voltage to shut down, you can modify the 3.00 to other value
- if readVoltage(bus) < 3.00:
-        print ("Battery LOW!!!")
-        print ("Shutdown in 10 seconds")
-        time.sleep(10)
-        GPIO.output(GPIO_PORT, GPIO.HIGH)
-        time.sleep(3)
-        GPIO.output(GPIO_PORT, GPIO.LOW)
-
  time.sleep(2)
 ' >> /home/pi/x728bat.py
-#sudo chmod +x /home/pi/x728bat.py
-
-#X728 AC Power loss / power adapter failture detection
-#!/bin/bash
-echo '#!/usr/bin/env python
-import RPi.GPIO as GPIO
-import time
-
-PLD_PIN = 6
-BUZZER_PIN = 20
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(PLD_PIN, GPIO.IN)
-GPIO.setup(BUZZER_PIN, GPIO.OUT)
-
-while True:
-    i = GPIO.input(PLD_PIN)
-    if i == 0:
-        print("AC Power OK")
-        GPIO.output(BUZZER_PIN, 0)
-    elif i == 1:
-        print("Power Supply A/C Lost")
-        GPIO.output(BUZZER_PIN, 1)
-        time.sleep(0.1)
-        GPIO.output(BUZZER_PIN, 0)
-        time.sleep(0.1)
-
-    time.sleep(1)
-' > /home/pi/x728pld.py
-#sudo chmod +x /home/pi/x728pld.py
-
-# x728 Test Auto shutdown when AC power loss or power adapter failure
-echo '#!/usr/bin/env python
-import RPi.GPIO as GPIO
-import time
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(6, GPIO.IN)
-GPIO.setup(26, GPIO.OUT)
-GPIO.setwarnings(False)
-
-def my_callback(channel):
-    if GPIO.input(6):     # if port 6 == 1
-        print ("---AC Power Loss OR Power Adapter Failure---")
-        print ("Shutdown in 5 seconds")
-        time.sleep(5)
-        GPIO.output(26, GPIO.HIGH)
-        time.sleep(3)
-        GPIO.output(26, GPIO.LOW)
-
-#time.sleep(2)
-
-    else:                  # if port 6 != 1
-        print ("---AC Power OK,Power Adapter OK---")
-
-GPIO.add_event_detect(6, GPIO.BOTH, callback=my_callback)
-input("Testing Started")
-' > /home/pi/x728plsd.py
